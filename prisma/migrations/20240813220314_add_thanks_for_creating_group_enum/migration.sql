@@ -1,0 +1,2 @@
+-- AlterEnum
+ALTER TYPE "SystemMessageType" ADD VALUE 'THANKS_FOR_CREATING_GROUP';
