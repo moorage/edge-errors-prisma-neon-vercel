@@ -2,7 +2,9 @@ import { auth } from "../auth";
 import { prisma } from "../prisma/client";
 
 export const assertCurrentUser = async () => {
+  console.warn("assertCurrentUser - starting auth()");
   const session = await auth();
+  console.warn("assertCurrentUser - finished auth()");
   if (!session?.user) {
     return {
       errorResponse: Response.json(
@@ -42,7 +44,9 @@ export const assertCurrentUser = async () => {
 export const assertCurrentUserWithGroupMembership = async (
   groupHandle: string
 ) => {
+  console.warn("assertCurrentUserWithGroupMembership - starting auth()");
   const session = await auth();
+  console.warn("assertCurrentUserWithGroupMembership - finished auth()");
   if (!session?.user) {
     return {
       errorResponse: Response.json(
@@ -63,6 +67,9 @@ export const assertCurrentUserWithGroupMembership = async (
     };
   }
 
+  console.warn(
+    "assertCurrentUserWithGroupMembership - starting prisma.group.findUnique"
+  );
   const group = await prisma.group.findUnique({
     where: { handle: groupHandle },
     include: {
@@ -70,6 +77,9 @@ export const assertCurrentUserWithGroupMembership = async (
       members: { include: { user: true } },
     },
   });
+  console.warn(
+    "assertCurrentUserWithGroupMembership - finished prisma.group.findUnique"
+  );
   if (!group) {
     console.error("Group not found");
     return {
@@ -81,6 +91,9 @@ export const assertCurrentUserWithGroupMembership = async (
     };
   }
   const groupId = group.id;
+  console.warn(
+    "assertCurrentUserWithGroupMembership - starting prisma.user.findUnique"
+  );
   const user = await prisma.user.findUnique({
     where: { email: session.user.email },
     include: {
@@ -94,6 +107,9 @@ export const assertCurrentUserWithGroupMembership = async (
       },
     },
   });
+  console.warn(
+    "assertCurrentUserWithGroupMembership - finished prisma.user.findUnique"
+  );
 
   if (!user) {
     console.error("User account not found");
@@ -152,7 +168,9 @@ export const isCreatorOrMemberOfGroupHandle = (
   return createdGroup || membership;
 };
 export const assertCurrentUserWithMemberships = async () => {
+  console.warn("assertCurrentUserWithMemberships - starting auth()");
   const session = await auth();
+  console.warn("assertCurrentUserWithMemberships - finished auth()");
   if (!session?.user) {
     return {
       errorResponse: Response.json(

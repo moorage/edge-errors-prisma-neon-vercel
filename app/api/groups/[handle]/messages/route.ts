@@ -27,17 +27,15 @@ export async function GET(
   const _mode = searchParams.get("mode") || defaultMode;
 
   console.warn(
-    "in GET /api/groups/[handle]/messages, about to run assertCurrentUserWithGroupMembership and prisma.group.findUnique"
+    "in GET /api/groups/[handle]/messages, about to run assertCurrentUserWithGroupMembership"
   );
 
-  const [{ user, errorResponse }, group] = await Promise.all([
-    assertCurrentUserWithGroupMembership(params.handle),
-    prisma.group.findUnique({
-      where: { handle: params.handle },
-    }),
-  ]);
+  const { user, errorResponse } = await assertCurrentUserWithGroupMembership(
+    params.handle
+  );
+
   console.warn(
-    "in GET /api/groups/[handle]/messages, Finished assertCurrentUserWithGroupMembership and prisma.group.findUnique"
+    "in GET /api/groups/[handle]/messages, Finished assertCurrentUserWithGroupMembership"
   );
 
   if (errorResponse) {
@@ -51,7 +49,13 @@ export async function GET(
       { status: 401, statusText: "No session user" }
     );
   }
+  const group =
+    user.createdGroups.find((g) => g.handle === params.handle) ||
+    user.memberships
+      .map((m) => m.group)
+      .find((g) => g.handle === params.handle);
 
+  // check if authorized
   if (!group) {
     waitUntil(endPrismaPoolOnEdge(runtime));
     return Response.json(

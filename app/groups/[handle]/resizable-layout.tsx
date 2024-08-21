@@ -85,15 +85,6 @@ export function ResizableLayout({
             isCollapsed={isCollapsed}
             links={[
               {
-                title: "New Message",
-                icon: Pencil2Icon,
-                href: `/groups/${currentGroup.handle}/new-message`,
-                variant:
-                  pathname === `/groups/${currentGroup.handle}/new-message`
-                    ? "default"
-                    : "ghost",
-              },
-              {
                 title: "Messages",
                 // label: "",
                 icon: ChatBubbleIcon,
@@ -104,31 +95,9 @@ export function ResizableLayout({
                   ? "default"
                   : "ghost",
               },
-
-              {
-                title: "Members",
-                icon: PersonIcon,
-                href: `/groups/${currentGroup.handle}/members`,
-                variant: pathname.startsWith(
-                  `/groups/${currentGroup.handle}/members`
-                )
-                  ? "default"
-                  : "ghost",
-              },
             ]}
           />
           <Separator />
-          <Nav
-            isCollapsed={isCollapsed}
-            links={[
-              {
-                title: "Personal Settings",
-                icon: GearIcon,
-                href: `/settings`,
-                variant: pathname.startsWith(`/settings`) ? "default" : "ghost",
-              },
-            ]}
-          />
         </ResizablePanel>
         <ResizableHandle withHandle />
         <ResizablePanel
