@@ -24,9 +24,11 @@ export const prisma = new PrismaClient({ adapter });
 
 // for now, always disconnect the pool
 export async function endPrismaPoolOnEdge(runtime: "edge") {
-  if (runtime === "edge") {
-    return await prisma.$disconnect();
-  } else {
-    return await prisma.$disconnect();
-  }
+  return;
+  // TODO turn the disconnections back on
+  // if (runtime === "edge") {
+  //   return await prisma.$disconnect();
+  // } else {
+  //   return await prisma.$disconnect();
+  // }
 }

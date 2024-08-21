@@ -26,12 +26,19 @@ export async function GET(
     : defaultPerPage;
   const _mode = searchParams.get("mode") || defaultMode;
 
+  console.warn(
+    "in GET /api/groups/[handle]/messages, about to run assertCurrentUserWithGroupMembership and prisma.group.findUnique"
+  );
+
   const [{ user, errorResponse }, group] = await Promise.all([
     assertCurrentUserWithGroupMembership(params.handle),
     prisma.group.findUnique({
       where: { handle: params.handle },
     }),
   ]);
+  console.warn(
+    "in GET /api/groups/[handle]/messages, Finished assertCurrentUserWithGroupMembership and prisma.group.findUnique"
+  );
 
   if (errorResponse) {
     waitUntil(endPrismaPoolOnEdge(runtime));
@@ -60,6 +67,9 @@ export async function GET(
       { status: 401, statusText: "You are not a member of this group" }
     );
   }
+  console.warn(
+    "in GET /api/groups/[handle]/messages, starting prisma.message.findMany"
+  );
   const messages = await prisma.message.findMany({
     where: {
       groupId: group.id,
@@ -76,6 +86,9 @@ export async function GET(
     take: perPage,
     skip: page * perPage,
   });
+  console.warn(
+    "in GET /api/groups/[handle]/messages, finished prisma.message.findMany"
+  );
 
   const results = messages.map((message) => {
     const delivery = message.deliveries.find((d) => d.messageId === message.id);
@@ -86,5 +99,8 @@ export async function GET(
   });
 
   waitUntil(endPrismaPoolOnEdge(runtime));
+  console.warn(
+    "in GET /api/groups/[handle]/messages, about to return Response.json"
+  );
   return Response.json(results);
 }
